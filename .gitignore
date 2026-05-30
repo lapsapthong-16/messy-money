@@ -1,0 +1,11 @@
+.codex
+openspec
+node_modules
+.wrangler
+dist
+coverage
+.DS_Store
+.env
+.env.*
+.dev.vars
+!.env.example

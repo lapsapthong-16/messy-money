@@ -1,0 +1,15 @@
+name = "messy-money"
+main = "src/index.ts"
+compatibility_date = "2026-05-30"
+
+[vars]
+APP_TIMEZONE = "Asia/Kuala_Lumpur"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "messy-money"
+database_id = "9c696b0b-1446-4328-b464-2ad13addaf62"
+preview_database_id = "messy-money-local"
+
+[observability]
+enabled = true
