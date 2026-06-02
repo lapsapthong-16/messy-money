@@ -90,6 +90,7 @@ Commands:
 /week
 /month
 /recent
+/undo
 /unknown
 /fix <id> <amount|date|note|item|store|category> <value>
 /delete <id>

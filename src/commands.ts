@@ -47,6 +47,16 @@ async function handleCommand(env: Env, repo: MoneyRepository, chatId: number, te
     await sendTelegramMessage(env, chatId, formatExpenseList("Recent expenses", await repo.listRecent(10)));
     return;
   }
+  if (command === "/undo") {
+    const latest = await repo.latestActiveExpense();
+    if (!latest) {
+      await sendTelegramMessage(env, chatId, "Nothing to undo.");
+      return;
+    }
+    await repo.softDelete(latest.id);
+    await sendTelegramMessage(env, chatId, `Undid latest expense:\n${formatExpenseLine(latest)}\nUse /restore ${latest.id} to bring it back.`);
+    return;
+  }
   if (command === "/unknown") {
     await sendTelegramMessage(env, chatId, formatExpenseList("Expenses needing review", await repo.listUnknown()));
     return;
@@ -64,7 +74,7 @@ async function handleCommand(env: Env, repo: MoneyRepository, chatId: number, te
     const [idRaw, fieldRaw, ...valueParts] = args;
     const value = valueParts.join(" ");
     if (!idRaw || !fieldRaw || !value) {
-      await sendTelegramMessage(env, chatId, "Usage: /fix <id> <amount|date|note|item|store|category> <value>");
+      await sendTelegramMessage(env, chatId, "Usage: /fix &lt;id&gt; &lt;amount|date|note|item|store|category&gt; &lt;value&gt;");
       return;
     }
     const field = fieldRaw!.toLowerCase();
@@ -76,7 +86,7 @@ async function handleCommand(env: Env, repo: MoneyRepository, chatId: number, te
   if (command === "/delete" || command === "/restore") {
     const id = Number(args[0]);
     if (!id) {
-      await sendTelegramMessage(env, chatId, `Usage: ${command} <id>`);
+      await sendTelegramMessage(env, chatId, `Usage: ${command} &lt;id&gt;`);
       return;
     }
     if (command === "/delete") await repo.softDelete(id);
@@ -159,10 +169,11 @@ function helpText(): string {
     "Messy Money commands:",
     "/today /yesterday /week /month",
     "/recent",
+    "/undo",
     "/unknown",
-    "/fix <id> <amount|date|note|item|store|category> <value>",
-    "/delete <id>",
-    "/restore <id>",
+    "/fix &lt;id&gt; &lt;amount|date|note|item|store|category&gt; &lt;value&gt;",
+    "/delete &lt;id&gt;",
+    "/restore &lt;id&gt;",
     "/report week|month|lastmonth|all",
     "/categories",
     "/category add|rename|delete"

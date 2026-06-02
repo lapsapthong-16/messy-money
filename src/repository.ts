@@ -103,6 +103,10 @@ export class MoneyRepository {
       .bind(limit).all<Expense>().then((r) => r.results ?? []);
   }
 
+  latestActiveExpense(): Promise<Expense | null> {
+    return this.db.prepare("SELECT * FROM expenses WHERE deleted_at IS NULL ORDER BY id DESC LIMIT 1").first<Expense>();
+  }
+
   listUnknown(): Promise<Expense[]> {
     return this.db.prepare(
       "SELECT * FROM expenses WHERE deleted_at IS NULL AND (amount IS NULL OR confidence < 0.75 OR is_estimate = 1 OR needs_review = 1) ORDER BY date DESC, id DESC LIMIT 25"
