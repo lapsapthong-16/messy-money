@@ -46,6 +46,33 @@ describe("parser validation", () => {
     expect(result[0]).toMatchObject({ category: "Other", amount: null, is_estimate: true, needs_review: true });
   });
 
+  it("accepts null optional fields from the parser", () => {
+    const result = validateParsedExpenses(JSON.stringify({
+      expenses: [{
+        date: null,
+        store: null,
+        item: "coffee",
+        amount: 8.5,
+        category: null,
+        note: null,
+        is_estimate: false,
+        confidence: null,
+        needs_review: false
+      }]
+    }), "coffee 8.50", categories, new Date("2026-05-30T01:00:00Z"));
+
+    expect(result[0]).toMatchObject({
+      date: "2026-05-30",
+      store: "Unknown",
+      item: "coffee",
+      amount: 8.5,
+      category: "Other",
+      note: "",
+      confidence: 0.5,
+      needs_review: true
+    });
+  });
+
   it("rejects malformed parser output", () => {
     expect(() => validateParsedExpenses("{nope", "raw", categories)).toThrow("malformed JSON");
   });

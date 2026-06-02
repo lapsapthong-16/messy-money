@@ -1,4 +1,5 @@
 import { handleTextMessage } from "./commands";
+import { sendTelegramMessage } from "./telegram";
 import type { Env, TelegramUpdate } from "./types";
 
 export default {
@@ -28,6 +29,20 @@ export default {
 
     await handleTextMessage(env, message.chat.id, message.text);
     return Response.json({ ok: true });
+  },
+
+  async scheduled(_event: ScheduledEvent, env: Env): Promise<void> {
+    const missing = ["TELEGRAM_BOT_TOKEN", "TELEGRAM_ALLOWED_CHAT_ID"].filter((key) => !env[key as keyof Env]);
+    if (missing.length) {
+      console.warn(`Skipping expense reminder. Missing required config: ${missing.join(", ")}`);
+      return;
+    }
+
+    await sendTelegramMessage(
+      env,
+      env.TELEGRAM_ALLOWED_CHAT_ID,
+      `<a href="tg://user?id=${env.TELEGRAM_ALLOWED_CHAT_ID}">Ed</a>, any expenses to record?`
+    );
   }
 };
 

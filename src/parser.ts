@@ -4,13 +4,13 @@ import type { Category, Env, NewExpense } from "./types";
 
 const parsedExpenseSchema = z.object({
   date: z.string().nullable().optional(),
-  store: z.string().min(1).default("Unknown"),
-  item: z.string().default(""),
+  store: z.string().nullable().default("Unknown").transform((value) => value?.trim() || "Unknown"),
+  item: z.string().nullable().default("").transform((value) => value ?? ""),
   amount: z.number().nullable(),
-  category: z.string().default("Other"),
-  note: z.string().default(""),
+  category: z.string().nullable().default("Other").transform((value) => value?.trim() || "Other"),
+  note: z.string().nullable().default("").transform((value) => value ?? ""),
   is_estimate: z.boolean().default(false),
-  confidence: z.number().min(0).max(1).default(0.5),
+  confidence: z.number().min(0).max(1).nullable().default(0.5).transform((value) => value ?? 0.5),
   needs_review: z.boolean().default(false)
 });
 

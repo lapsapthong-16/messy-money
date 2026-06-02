@@ -5,6 +5,9 @@ compatibility_date = "2026-05-30"
 [vars]
 APP_TIMEZONE = "Asia/Kuala_Lumpur"
 
+[triggers]
+crons = ["0 4 * * *", "0 12 * * *"]
+
 [[d1_databases]]
 binding = "DB"
 database_name = "messy-money"

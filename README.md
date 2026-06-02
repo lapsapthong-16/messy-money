@@ -106,6 +106,15 @@ Commands:
 
 Reports are delivered as both `expenses-<period>.xlsx` and `expenses-<period>.html`. The HTML report is self-contained, responsive, printable, and uses an editorial finance ledger design with strong category color markers.
 
+## Reminders
+
+The Worker sends Telegram expense reminders at 12:00 PM and 8:00 PM Malaysia time. Cloudflare cron triggers are configured in UTC in `wrangler.toml`:
+
+```toml
+[triggers]
+crons = ["0 4 * * *", "0 12 * * *"]
+```
+
 ## Smoke Test
 
 After deployment:

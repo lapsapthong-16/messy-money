@@ -23,6 +23,25 @@ describe("worker routes", () => {
     expect(await response.json()).toEqual({ ok: true, ignored: true });
     expect(fetchSpy).not.toHaveBeenCalled();
   });
+
+  it("sends Telegram reminder on scheduled events", async () => {
+    const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response(JSON.stringify({ ok: true })));
+
+    await worker.scheduled({} as ScheduledEvent, env());
+
+    expect(fetchSpy).toHaveBeenCalledWith(
+      "https://api.telegram.org/bottoken/sendMessage",
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({
+          chat_id: "42",
+          text: `<a href="tg://user?id=42">Ed</a>, any expenses to record?`,
+          parse_mode: "HTML",
+          disable_web_page_preview: true
+        })
+      })
+    );
+  });
 });
 
 function env(): Env {
